@@ -9,41 +9,72 @@
 	<main style="text-align:center;">
 		<% if ( template === "reviews" ) { %> 
 			<% include ../partials/reviews %>
+		<% } else if ( template === "businesses" ) { %> 
+			<% include ../partials/businesses %>
 		<% } %>
 	</main>
 
 	<footer> <% include ../partials/footer %> </footer>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
 	<script>
-		// Module
-		angular.module('zentoo', [])
+	// Module
+	angular.module('zentoo', [])
 
-		// Service
-		.factory('Reviews', [ '$http', function($http) {
-			var reviewService = {}
-			reviewService.top10 = $http.get('/api/reviews');
-/* 			reviewService.top10Search */
-			return reviewService;
-		} ])
-		
+	// Service
+	.factory('Reviews', [ '$http', function($http) {
+		var reviewService = {};
+		reviewService.top10 = $http.get('/api/reviews');
+		return reviewService;
+	} ])
+	
+	.factory('Businesses', [ '$http', function($http) {
+		var businessService = {};
+		businessService.top10 = $http.get('/api/businesses');
+		return businessService;
+	} ])
+	
+	.factory('Utils', [function() {
+		var utils = {};
+		utils.trimLongString = function (obj) {
+			var string = JSON.stringify(obj);
+			if(string.length > 25) {
+			    string = string.substring(0,24)+"...";
+			}
+			return string;
+		};
+		return utils;
+	}])
+	
+	// Controller
+	.controller('BusinessesController',
+			[ '$scope', 'Businesses', 'Utils', function($scope, Businesses, Utils) {
+				Businesses.top10.success(function(data) {
+					$scope.businesses = data;
+				}).error(function(data, status) {
+					console.log(data, status);
+					$scope.businesses = [];
+				});
+				$scope.trimLongString = Utils.trimLongString;
+//				scope.$watch('search', function() {
+//					Top10Businesses.success(function(data) {
+//						$scope.Businesses = data;
+//					}).error(function(data, status) {
+//						console.log(data, status);
+//						$scope.Businesses = [];
+//					});
+//				});
+			} ])
 
-		// Controller
-		.controller('ReviewsController',
-				[ '$scope', 'Reviews', function($scope, Reviews) {
-					Reviews.top10.success(function(data) {
-						$scope.reviews = data;
-					}).error(function(data, status) {
-						console.log(data, status);
-						$scope.reviews = [];
-					});
-/* 					scope.$watch('search', function() {
-						Top10Reviews.success(function(data) {
-							$scope.reviews = data;
-						}).error(function(data, status) {
-							console.log(data, status);
-							$scope.reviews = [];
-						});
-					});
- */				} ]);
+	// Controller
+	.controller('ReviewsController',
+			[ '$scope', 'Reviews', function($scope, Reviews) {
+				Reviews.top10.success(function(data) {
+					$scope.reviews = data;
+				}).error(function(data, status) {
+					console.log(data, status);
+					$scope.reviews = [];
+				});
+			} ]);
 	</script>
 </body>
 </html>

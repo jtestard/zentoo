@@ -9,6 +9,7 @@ var mongo = require('./config/mongo-config');
 var error = require('./config/error-config');
 var routes = require('./routes/index');
 var reviews = require('./routes/reviews');
+var businesses = require('./routes/businesses');
 
 // Start Mongo
 mongo.connect();
@@ -29,6 +30,7 @@ app.locals = config.locals;
 // Setup Routes
 app.use('/', routes);
 app.use('/api/reviews', reviews);
+app.use('/api/businesses', businesses);
 
 // Error Handlers
 app.use(error.error404);

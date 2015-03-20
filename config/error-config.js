@@ -11,7 +11,7 @@ error.error404 = function(req, res, next) {
 // TODO: write production error handler. this is development only.
 error.error = function(err, req, res, next) {
     res.status(err.status || 500);
-    res.render('error', {
+    res.render('partials/error', {
         message: err.message,
         error: err
     });

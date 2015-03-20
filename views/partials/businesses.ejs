@@ -1,0 +1,42 @@
+<div class="jumbotron" ng-controller="BusinessesController">
+	<h2>Businesses</h2>
+	<div id="searchbar">
+		Search: <input type="text" ng-model="search_business">
+	</div>
+	<div class="table-responsive">
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Stars</th>
+					<th>Categories</th>
+					<th>Attributes</th>
+					<th>Location</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="business in businesses">
+					<td>{{ business.name }}</td>
+					<td>{{ business.stars }}</td>
+					<td>
+						<div ng-repeat="category in business.categories">
+							<span class="label"
+								style="background-color: <%= utils.randomDarkColor() %>;">
+								{{ category }}
+							</span>
+						</div>
+					</td>
+					<td>
+						<div ng-repeat="(key, value) in business.attributes">
+							<span class="label"
+								style="background-color: <%= utils.randomDarkColor() %>;">
+								{{ key }} : {{ trimLongString(value)}}
+							</span>
+						</div>
+					</td>
+					<td>{{ business.full_address }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
