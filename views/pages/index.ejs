@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org" lang="en">
+<head><% include ../partials/head %>
+</head>
+<body class="container" ng-app="zentoo">
+
+	<header> <% include ../partials/header %> </header>
+
+	<main style="text-align:center;">
+		<% if ( template === "reviews" ) { %> 
+			<% include ../partials/reviews %>
+		<% } %>
+	</main>
+
+	<footer> <% include ../partials/footer %> </footer>
+	<script>
+		// Module
+		angular.module('zentoo', [])
+
+		// Service
+		.factory('Reviews', [ '$http', function($http) {
+			var reviewService = {}
+			reviewService.top10 = $http.get('/api/reviews');
+/* 			reviewService.top10Search */
+			return reviewService;
+		} ])
+		
+
+		// Controller
+		.controller('ReviewsController',
+				[ '$scope', 'Reviews', function($scope, Reviews) {
+					Reviews.top10.success(function(data) {
+						$scope.reviews = data;
+					}).error(function(data, status) {
+						console.log(data, status);
+						$scope.reviews = [];
+					});
+/* 					scope.$watch('search', function() {
+						Top10Reviews.success(function(data) {
+							$scope.reviews = data;
+						}).error(function(data, status) {
+							console.log(data, status);
+							$scope.reviews = [];
+						});
+					});
+ */				} ]);
+	</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<div class="jumbotron" ng-controller="ReviewsController">
+	<div id="searchbar">
+		Search: <input type="text" ng-model="search">
+	</div>
+	<div class="table-responsive">
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>date</th>
+					<th>stars</th>
+					<th>votes</th>
+					<th>text</th>
+				</tr>
+			</thead>
+			<tbody ng-repeat="review in reviews">
+				<tr>
+					<td>{{ review.date }}</td>
+					<td>{{ review.stars }}</td>
+					<td><span class="label label-success"> funny : {{
+							review.votes.funny }} </span> <span class="label label-info">
+							useful : {{ review.votes.useful }} </span> <span
+						class="label label-warning"> cool : {{ review.votes.cool
+							}} </span></td>
+					<td>{{ review.text }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

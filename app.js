@@ -28,7 +28,7 @@ app.locals = config.locals;
 
 // Setup Routes
 app.use('/', routes);
-app.use('/reviews', reviews);
+app.use('/api/reviews', reviews);
 
 // Error Handlers
 app.use(error.error404);
