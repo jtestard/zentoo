@@ -7,74 +7,114 @@
 	<header> <% include ../partials/header %> </header>
 
 	<main style="text-align:center;">
-		<% if ( template === "reviews" ) { %> 
+		<% if ( template === "reviews") { %>
 			<% include ../partials/reviews %>
-		<% } else if ( template === "businesses" ) { %> 
+		<% } else if ( template === "businesses" ) { %>
 			<% include ../partials/businesses %>
 		<% } %>
 	</main>
 
 	<footer> <% include ../partials/footer %> </footer>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
 	<script>
-	// Module
-	angular.module('zentoo', [])
+		// Module
+		angular.module('zentoo', [])
 
-	// Service
-	.factory('Reviews', [ '$http', function($http) {
-		var reviewService = {};
-		reviewService.top10 = $http.get('/api/reviews');
-		return reviewService;
-	} ])
-	
-	.factory('Businesses', [ '$http', function($http) {
-		var businessService = {};
-		businessService.top10 = $http.get('/api/businesses');
-		return businessService;
-	} ])
-	
-	.factory('Utils', [function() {
-		var utils = {};
-		utils.trimLongString = function (obj) {
-			var string = JSON.stringify(obj);
-			if(string.length > 25) {
-			    string = string.substring(0,24)+"...";
-			}
-			return string;
-		};
-		return utils;
-	}])
-	
-	// Controller
-	.controller('BusinessesController',
-			[ '$scope', 'Businesses', 'Utils', function($scope, Businesses, Utils) {
-				Businesses.top10.success(function(data) {
-					$scope.businesses = data;
-				}).error(function(data, status) {
-					console.log(data, status);
-					$scope.businesses = [];
-				});
-				$scope.trimLongString = Utils.trimLongString;
-//				scope.$watch('search', function() {
-//					Top10Businesses.success(function(data) {
-//						$scope.Businesses = data;
-//					}).error(function(data, status) {
-//						console.log(data, status);
-//						$scope.Businesses = [];
-//					});
-//				});
-			} ])
+		// Service
+		.factory('Reviews', [ '$http', function($http) {
+			var reviewService = {};
+			reviewService.top10 = $http.get('/api/reviews');
+			return reviewService;
+		} ])
 
-	// Controller
-	.controller('ReviewsController',
-			[ '$scope', 'Reviews', function($scope, Reviews) {
-				Reviews.top10.success(function(data) {
-					$scope.reviews = data;
-				}).error(function(data, status) {
-					console.log(data, status);
-					$scope.reviews = [];
-				});
-			} ]);
+		.factory('Businesses', [ '$http', function($http) {
+			var businessService = {};
+			$http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
+			businessService.top10 = $http.get('/api/businesses');
+		    var jsonToURLEncoding = function(obj) {
+		        var str = [];
+		        for(var p in obj)
+		        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+		        return str.join("&");
+		    }
+			businessService.search = function(criteria) {
+				// Make the string URL friendly.
+				var criteria_friendly = jsonToURLEncoding({ "search" : criteria });
+				return $http.post('/api/businesses/', criteria_friendly );
+ 			};
+			return businessService;
+		} ])
+
+		.factory('Utils', [ function() {
+			var utils = {};
+			utils.trimLongString = function(obj) {
+				var string = JSON.stringify(obj);
+				if (string.length > 25) {
+					string = string.substring(0, 24) + "...";
+				}
+				return string;
+			};
+			return utils;
+		} ])
+
+		// Controller
+		.controller(
+				'BusinessesController',
+				[
+						'$scope',
+						'Businesses',
+						'Utils',
+						function($scope, Businesses, Utils) {
+							$scope.empty = false; // means result is empty
+							$scope.waiting = true; // means we are waiting for somthing from the server.
+							$scope.trimLongString = Utils.trimLongString;
+							
+							var success = function (data) {
+								if (data.length == 0) {
+									$scope.empty = true;
+								} else {
+									$scope.empty = false;
+								}
+								$scope.businesses = data;
+								$scope.waiting = false;
+							};
+							
+							var error = function (data, status) {
+								console.log(data, status);
+								$scope.businesses = [];
+								$scope.empty = false;
+								$scope.waiting = false;
+							};
+
+							Businesses.top10.success(success).error(error);
+							$scope.$watch('search_businesses', function(
+									newValue, oldValue) {
+								
+								if (!newValue || newValue.length == 0) {
+									// Do noting if string is empty.	
+								} else {
+									// Empty the output, wait for updated output to come.
+									$scope.businesses = [];
+									$scope.empty = false;
+									$scope.waiting = true;
+									Businesses.search(newValue)
+										.success(success)
+										.error(error);									
+								}
+							});
+						} ])
+
+		// Controller
+		.controller('ReviewsController',
+				[ '$scope', 'Reviews', function($scope, Reviews) {
+					Reviews.top10.success(function(data) {
+						$scope.reviews = data;
+					}).error(function(data, status) {
+						console.log(data, status);
+						$scope.reviews = [];
+					});
+				} ]);
 	</script>
 </body>
 </html>

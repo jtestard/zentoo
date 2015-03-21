@@ -1,0 +1,24 @@
+SELECT topC.id as category_id,
+		topU.id as user_id,
+		sum(s.quantity) as quantity_sold,
+		sum(s.price) as dollar_value
+FROM (
+		SELECT p.cid as id
+		FROM products as p, sales as s
+		WHERE p.id = s.pid
+		GROUP BY p.cid
+		ORDER BY sum(s.price) DESC
+		LIMIT 20
+	) as topC
+CROSS JOIN (
+		SELECT u.id as id
+		FROM users as u, sales as s
+		WHERE u.id = s.uid
+		GROUP BY u.id
+		ORDER BY sum(s.price) DESC
+		LIMIT 20
+	) as topU
+JOIN products as p on topC.id = p.cid
+LEFT OUTER JOIN sales as sales
+ON s.uid = topU.id and s.pid = prods.pid
+GROUP BY topC.id, topU.id;

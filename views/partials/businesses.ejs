@@ -1,9 +1,15 @@
 <div class="jumbotron" ng-controller="BusinessesController">
 	<h2>Businesses</h2>
 	<div id="searchbar">
-		Search: <input type="text" ng-model="search_business">
+		Search: <input type="text" ng-model="search_businesses">
 	</div>
-	<div class="table-responsive">
+	<div ng-if="waiting">
+		<i class="fa fa-spinner fa-spin"></i>
+	</div>
+	<div class="alert alert-info" role="alert" ng-if="!waiting && empty">
+		Nothing was found for what you search for.
+	</div>
+	<div class="table-responsive" ng-if="!waiting && !empty">
 		<table class="table table-bordered">
 			<thead>
 				<tr>

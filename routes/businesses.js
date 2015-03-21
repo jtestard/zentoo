@@ -7,10 +7,10 @@ var mongoose = require('mongoose');
 var Business = require('../models/Businesses.js');
 
 /**
- * GET '/reviews' listing. The SQL equivalent is :
+ * GET '/api/businesses' listing. The SQL equivalent is :
  * 
  * 		select *
- * 		from Reviews
+ * 		from Businesses
  * 		limit 10;
  * 
  */
@@ -23,20 +23,21 @@ router.get('/', function(req, res, next) {
   });
 });
 
-///**
-// * GET '/reviews/:id' list. The SQL equivalent is :
-// * 
-// * 		select *
-// * 		from Reviews r
-// * 		where r.text 
-// * 
-// */
-//router.get('/:id', function(req, res, next) {
-//	  Todo.findById(req.params.id, function (err, post) {
-//	    if (err) return next(err);
-//	    res.json(post);
-//	  });
-//	});
+/**
+ * post '/api/businesses/' for searching. The SQL equivalent is :
+ * 
+ * 		select *
+ * 		from Businesses r
+ * 		where search in r.name 
+ * 
+ */
+router.post('/', function(req, res, next) {
+	var value = req.body.search;
+	Business.find({ $text : { $search : value } }, function (err, post) {
+	    if (err) return next(err);
+	    res.json(post);
+	  });
+	});
 
 //TODO : write full CRUD specification.
 

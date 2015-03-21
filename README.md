@@ -36,6 +36,25 @@ We add the following for the application :
  - mongoose and connection to MongoDB.
  - AngularJS object passing between services and modules and how they bind to HTML (which in turn can be controlled by ExpressJS).
  - Layout.ejs is the default layout name.
+ 
+### Some mongo queries 
+
+```
+>> use db zentoo
+>> var results = db.businesses.find( { name : {$regex : ".*Eric.*"} } );
+>> for (var i = 0 ; i < results.length() ; i++) { printjson(results[i].name); }
+"Eric Goldberg, MD"
+"Shawn Eric - Ideal Entertainment"
+"Swanson Eric D MD DMD"
+"Eric James - State Farm Insurance Agent"
+"Eric Wolfson, DO"
+"Eric Andrew Collection At Town Square"
+"Biosthetique Friseur ScherundKamm Eric Schneider"
+"Eric's Foot Spa"
+"Law Offices Of Eric R Blank"
+"Eric Jackson - State Farm Insurance Agent"
+"Erickbertos Mexican Resturant"
+```
 
 ### Tools
 
