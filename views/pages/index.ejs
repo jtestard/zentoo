@@ -60,12 +60,13 @@
 
 		// Controller
 		.controller(
-				'BusinessesController',
+				'ZentooController',
 				[
 						'$scope',
 						'Businesses',
+						'Reviews',
 						'Utils',
-						function($scope, Businesses, Utils) {
+						function($scope, Businesses, Reviews, Utils) {
 							$scope.empty = false; // means result is empty
 							$scope.waiting = true; // means we are waiting for somthing from the server.
 							$scope.trimLongString = Utils.trimLongString;
@@ -88,6 +89,8 @@
 							};
 
 							Businesses.top10.success(success).error(error);
+							Reviews.top10.success(success).error(error);
+							
 							$scope.$watch('search_businesses', function(
 									newValue, oldValue) {
 								
@@ -103,18 +106,7 @@
 										.error(error);									
 								}
 							});
-						} ])
-
-		// Controller
-		.controller('ReviewsController',
-				[ '$scope', 'Reviews', function($scope, Reviews) {
-					Reviews.top10.success(function(data) {
-						$scope.reviews = data;
-					}).error(function(data, status) {
-						console.log(data, status);
-						$scope.reviews = [];
-					});
-				} ]);
+						} ]);
 	</script>
 </body>
 </html>
