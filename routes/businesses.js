@@ -6,6 +6,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var Business = require('../models/Businesses.js');
 
+// Deprecated
 /**
  * GET '/api/businesses' listing. The SQL equivalent is :
  * 
@@ -33,10 +34,15 @@ router.get('/', function(req, res, next) {
  */
 router.post('/', function(req, res, next) {
 	var value = req.body.search;
-	Business.find({ $text : { $search : value } }, function (err, post) {
-	    if (err) return next(err);
-	    res.json(post);
-	  });
+	Business.find({ $text : { $search : value } },
+			{ "score": { "$meta": "textScore" } }
+			)
+			.sort({ "score": { "$meta": "textScore" }})
+			.limit(20)
+			.exec(function (err, post) {
+			    if (err) return next(err);
+			    res.json(post);
+			  });
 	});
 
 //TODO : write full CRUD specification.

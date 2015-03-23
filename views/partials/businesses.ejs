@@ -13,6 +13,7 @@
 		<table class="table table-bordered">
 			<thead>
 				<tr>
+					<th>Score</th>
 					<th>Name</th>
 					<th>Stars</th>
 					<th>Categories</th>
@@ -22,6 +23,7 @@
 			</thead>
 			<tbody>
 				<tr ng-repeat="business in businesses">
+					<td>{{ business.score }}</td>
 					<td>{{ business.name }}</td>
 					<td>{{ business.stars }}</td>
 					<td>

@@ -66,9 +66,10 @@
 						'Businesses',
 						'Reviews',
 						'Utils',
-						function($scope, Businesses, Reviews, Utils) {
+						'$timeout',
+						function($scope, Businesses, Reviews, Utils, $timeout) {
 							$scope.empty = false; // means result is empty
-							$scope.waiting = true; // means we are waiting for somthing from the server.
+							$scope.waiting = false; // means we are waiting for somthing from the server.
 							$scope.trimLongString = Utils.trimLongString;
 							
 							var success = function (data) {
@@ -87,9 +88,16 @@
 								$scope.empty = false;
 								$scope.waiting = false;
 							};
-
-							Businesses.top10.success(success).error(error);
-							Reviews.top10.success(success).error(error);
+							
+							var searchFunction = function() {
+								// Empty the output, wait for updated output to come.
+								$scope.businesses = [];
+								$scope.empty = false;
+								$scope.waiting = true;
+								Businesses.search($scope.newValue)
+									.success(success)
+									.error(error);
+							}
 							
 							$scope.$watch('search_businesses', function(
 									newValue, oldValue) {
@@ -97,14 +105,12 @@
 								if (!newValue || newValue.length == 0) {
 									// Do noting if string is empty.	
 								} else {
-									// Empty the output, wait for updated output to come.
-									$scope.businesses = [];
-									$scope.empty = false;
-									$scope.waiting = true;
-									Businesses.search(newValue)
-										.success(success)
-										.error(error);									
-								}
+									// Locking to avoid too many requests to be sent to the server.
+									$scope.newValue = newValue; //record change.
+									if ($scope.searchPromise)
+										$timeout.cancel($scope.searchPromise);
+									$scope.searchPromise = $timeout(searchFunction, 250);
+ 								}
 							});
 						} ]);
 	</script>
