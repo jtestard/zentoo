@@ -1,0 +1,51 @@
+<div class="jumbotron" ng-controller="ZentooController">
+	<h2>Businesses</h2>
+	<div id="searchbar">
+		Search Business: <input type="text" ng-model="search_businesses">
+		Search Location: <input type="text" ng-model="search_location">
+	</div>
+	<div ng-if="waiting">
+		<i class="fa fa-spinner fa-spin"></i>
+	</div>
+	<div class="alert alert-info" role="alert" ng-if="!waiting && empty">
+		Nothing was found for what you search for.
+	</div>
+	<div class="table-responsive" ng-if="!waiting && !empty">
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>Score</th>
+					<th>Name</th>
+					<th>Stars</th>
+					<th>Categories</th>
+					<th>Attributes</th>
+					<th>Location</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="business in businesses.hits">
+					<td>{{ business.score }}</td>
+					<td>{{ business.name }}</td>
+					<td>{{ business.stars }}</td>
+					<td>
+						<div ng-repeat="category in business.categories">
+							<span class="label"
+								style="background-color: <%= utils.randomDarkColor() %>;">
+								{{ category }}
+							</span>
+						</div>
+					</td>
+					<td>
+						<div ng-repeat="(key, value) in business.attributes">
+							<span class="label"
+								style="background-color: <%= utils.randomDarkColor() %>;">
+								{{ key }} : {{ trimLongString(value)}}
+							</span>
+						</div>
+					</td>
+					<td>{{ business.full_address }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
